@@ -1,122 +1,118 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { use, useEffect, useState } from 'react';
+import Score from './components/Score';
+import './App.css';
+
+// Función para generar comida aleatoria (múltiplos de 5 para encajar con pasos de 5%)
+const getRandomCoordinates = () => {
+  let min = 0;
+  let max = 95;
+  let x = Math.floor((Math.random() * (max - min + 1) + min) / 5) * 5;
+  let y = Math.floor((Math.random() * (max - min + 1) + min) / 5) * 5;
+  return [x, y];
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [snake, setSnake] = useState([[0, 0], [5, 0]]);
+  const [food, setFood] = useState(getRandomCoordinates());
+  const [direction, setDirection] = useState('RIGHT');
+  const [speed, setSpeed] = usesState(200);
+  const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+  // Escucha del teclado
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      switch (e.keyCode) {
+        case 38: if (direction !== 'DOWN') setDirection('UP'); break;
+        case 40: if (direction !== 'UP') setDirection('DOWN'); break;
+        case 37: if (direction !== 'RIGHT') setDirection('LEFT'); break;
+        case 39: if (direction !== 'LEFT') setDirection('RIGHT'); break;
+      }
+    };
 
-      <div className="ticks"></div>
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [direction]);
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+  // Loop del juego
+  useEffect(() => {
+    if (gameOver) return;
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    const moveSnake = () => {
+      let dots = [...snake];
+      let head = dots[dots.length - 1];
+
+      switch (direction) {
+        case 'RIGHT': head = [head[0] + 5, head[1]]; break;
+        case 'LEFT': head = [head[0] - 5, head[1]]; break;
+        case 'DOWN': head = [head[0], head[1] + 5]; break;
+        case 'UP': head = [head[0], head[1] - 5]; break;
+      }
+
+      dots.push(head);
+      dots.shift();
+      setSnake(dots);
+    };
+
+    const interval = setInterval(moveSnake, speed);
+    return () => clearInterval(interval);
+  }, [snake, direction, gameOver, speed]);
+
+  // Detección de colisiones y comida
+  useEffect(() => {
+    const head = snake[snake.length - 1];
+
+    // Colisión con paredes
+    if (head[0] >= 100 || head[0] < 0 || head[1] >= 100 || head[1] < 0) {
+      onGameOver();
+    }
+
+    // Colisión con el cuerpo
+    snake.slice(0, -1).forEach(dot => {
+      if (head[0] === dot[0] && head[1] === dot[1]) onGameOver();
+    });
+
+    // Comer comida
+    if (head[0] === food[0] && head[1] === food[1]) {
+      setFood(getRandomCoordinates());
+      expandSnake();
+      setScore(s => s + 10);
+      if(speed > 50) setSpeed(speed - 5); // Aumentando la dificultad
+    }
+  }, [snake]);
+
+  const expandSnake = () => {
+    let newSnake = [...snake];
+    newSnake.unshift([]); // Añadiendo un segmento al inicio
+    setSnake(newSnake);
+  };
+
+  const onGameOver = () => {
+    setGameOver(true);
+  };
+
+  const resetGame = () => {
+    setSnake([[0, 0], [5, 0]]);
+    setFood(getRandomCoordinates());
+    setDirection('RIGHT');
+    setScore(0);
+    setGameOver(false);
+    setSpeed(200);
+  };
+
+  return(
+    <div className='game-container'>
+      <h1>Snake React Game</h1>
+      <Score score={score} />
+      <Board snake={snake} food={food} />
+      {gameOver && (
+        <div className='game-over'>
+          <h2>¡Game Over!</h2>
+          <button onClick={resetGame}>Reiniciar</button>
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
