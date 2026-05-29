@@ -1,7 +1,8 @@
-const Food = ({ dot }) => {
+const Food = ({ food }) => {
     const style = {
-        left: `${dot[0]}%`,
-        top: `${dot[1]}%`,
+        left: `${food.coords[0]}%`,
+        top: `${food.coords[1]}%`,
+        backgroundColor: food.type === 'red' ? '#f44336' : '#2196f3',
     };
 
     return <div className="food" style={style}></div>
