@@ -17,6 +17,47 @@
   background-color: var(--main-bg-color);
   min-height: 100vh;
   color: var(--text-color);
+  position: relative;
+}
+
+.status-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.score-board {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.snake-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-options {
+  display: flex;
+  gap: 8px;
+}
+
+.color-options button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.color-options button.active {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
 }
 
 .board {
@@ -30,7 +71,6 @@
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: var(--snake-color);
   border: 1px solid var(--snake-border);
 }
 
@@ -38,8 +78,16 @@
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: var(--food-color);
   border-radius: 50%;
+}
+
+.wall {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #8d6e63;
+  border: 1px solid #5d4037;
+  border-radius: 4px;
 }
 
 .game-over{
