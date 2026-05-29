@@ -21,7 +21,7 @@
 
 .board {
   position: relative;
-  background-color: var(--brackground-colorBoard);
+  background-color: var(--board-bg-color);
   border: 5px solid var(--board-border);
   margin-top: 20px;
 }
