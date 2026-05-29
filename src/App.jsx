@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import Score from './components/Score';
 import Board from './components/Board';
-import Snake from './components/Snake';
-import Food from './components/Food';
 import './App.css';
 
-// Función para generar comida aleatoria (múltiplos de 5 para encajar con pasos de 5%)
+// Función para generar coordenadas aleatorias en la grilla del tablero
 const getRandomCoordinates = () => {
   let min = 0;
   let max = 95;
@@ -14,13 +12,27 @@ const getRandomCoordinates = () => {
   return [x, y];
 };
 
+const getRandomFood = () => ({
+  coords: getRandomCoordinates(),
+  type: Math.random() < 0.5 ? 'red' : 'blue',
+});
+
+const getWalls = () => [
+  [20, 20], [25, 20], [30, 20], [35, 20],
+  [20, 25], [20, 30], [20, 35],
+  [60, 60], [65, 60], [70, 60], [75, 60], [80, 60], [80, 65], [80, 70],
+];
+
 function App() {
   const [snake, setSnake] = useState([[0, 0], [5, 0]]);
-  const [food, setFood] = useState(getRandomCoordinates());
+  const [food, setFood] = useState(getRandomFood());
   const [direction, setDirection] = useState('RIGHT');
   const [speed, setSpeed] = useState(200);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
+  const [snakeColor, setSnakeColor] = useState('#4caf50');
+  const [bestScore, setBestScore] = useState(() => Number(localStorage.getItem('bestScore')) || 0);
+  const [walls] = useState(getWalls());
 
   // Escucha del teclado
   useEffect(() => {
@@ -61,12 +73,21 @@ function App() {
     return () => clearInterval(interval);
   }, [snake, direction, gameOver, speed]);
 
+  useEffect(() => {
+    localStorage.setItem('bestScore', bestScore.toString());
+  }, [bestScore]);
+
   // Detección de colisiones y comida
   useEffect(() => {
     const head = snake[snake.length - 1];
 
-    // Colisión con paredes
+    // Colisión con paredes del tablero
     if (head[0] >= 100 || head[0] < 0 || head[1] >= 100 || head[1] < 0) {
+      onGameOver();
+    }
+
+    // Colisión con las barreras interiores
+    if (walls.some(wall => head[0] === wall[0] && head[1] === wall[1])) {
       onGameOver();
     }
 
@@ -76,27 +97,37 @@ function App() {
     });
 
     // Comer comida
-    if (head[0] === food[0] && head[1] === food[1]) {
-      setFood(getRandomCoordinates());
-      expandSnake();
-      setScore(s => s + 10);
-      if(speed > 50) setSpeed(speed - 5); // Aumentando la dificultad
+    if (head[0] === food.coords[0] && head[1] === food.coords[1]) {
+      eatFood();
     }
-  }, [snake]);
+  }, [snake, food, walls]);
 
-  const expandSnake = () => {
+  const eatFood = () => {
+    const points = food.type === 'red' ? 5 : 3;
+    const growBy = food.type === 'red' ? 3 : 1;
+
+    setFood(getRandomFood());
+    expandSnake(growBy);
+    setScore(s => s + points);
+    if (speed > 50) setSpeed(speed - 5);
+  };
+
+  const expandSnake = (count = 1) => {
     let newSnake = [...snake];
-    newSnake.unshift([...snake[0]]); // Añadiendo un segmento al inicio duplicando el primer segmento
+    for (let i = 0; i < count; i++) {
+      newSnake.unshift([...snake[0]]);
+    }
     setSnake(newSnake);
   };
 
   const onGameOver = () => {
     setGameOver(true);
+    setBestScore(prev => Math.max(prev, score));
   };
 
   const resetGame = () => {
     setSnake([[0, 0], [5, 0]]);
-    setFood(getRandomCoordinates());
+    setFood(getRandomFood());
     setDirection('RIGHT');
     setScore(0);
     setGameOver(false);
@@ -106,8 +137,28 @@ function App() {
   return(
     <div className='game-container'>
       <h1>Snake React Game</h1>
-      <Score score={score} />
-      <Board snake={snake} food={food} />
+      <div className='status-row'>
+        <Score score={score} bestScore={bestScore} />
+        <div className='snake-controls'>
+          <p>Color de la serpiente:</p>
+          <div className='color-options'>
+            {[
+              { label: 'Verde', value: '#4caf50' },
+              { label: 'Azul', value: '#2196f3' },
+              { label: 'Naranja', value: '#ff9800' },
+            ].map(color => (
+              <button
+                key={color.value}
+                type='button'
+                className={snakeColor === color.value ? 'active' : ''}
+                onClick={() => setSnakeColor(color.value)}
+                style={{ backgroundColor: color.value }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+      <Board snake={snake} food={food} walls={walls} snakeColor={snakeColor} />
       {gameOver && (
         <div className='game-over'>
           <h2>¡Game Over!</h2>
