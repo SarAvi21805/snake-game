@@ -1,5 +1,8 @@
-import { use, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Score from './components/Score';
+import Board from './components/Board';
+import Snake from './components/Snake';
+import Food from './components/Food';
 import './App.css';
 
 // Función para generar comida aleatoria (múltiplos de 5 para encajar con pasos de 5%)
@@ -15,7 +18,7 @@ function App() {
   const [snake, setSnake] = useState([[0, 0], [5, 0]]);
   const [food, setFood] = useState(getRandomCoordinates());
   const [direction, setDirection] = useState('RIGHT');
-  const [speed, setSpeed] = usesState(200);
+  const [speed, setSpeed] = useState(200);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
 
@@ -83,7 +86,7 @@ function App() {
 
   const expandSnake = () => {
     let newSnake = [...snake];
-    newSnake.unshift([]); // Añadiendo un segmento al inicio
+    newSnake.unshift([...snake[0]]); // Añadiendo un segmento al inicio duplicando el primer segmento
     setSnake(newSnake);
   };
 
