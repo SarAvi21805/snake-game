@@ -67,6 +67,18 @@
   margin-top: 20px;
 }
 
+.score-board {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.game-info {
+  text-align: left;
+  color: #dcdcdc;
+}
+
 .snake-segment {
   position: absolute;
   width: 20px;
@@ -81,6 +93,23 @@
   border-radius: 50%;
 }
 
+.bonus {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.enemy {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #d32f2f;
+  border: 2px solid #b71c1c;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(211, 47, 47, 0.65);
+}
+
 .wall {
   position: absolute;
   width: 20px;
@@ -90,11 +119,190 @@
   border-radius: 4px;
 }
 
+.tunnel {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: rgba(33, 150, 243, 0.35);
+  border: 1px dashed #29b6f6;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(33, 150, 243, 0.45);
+}
+
+.start-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.tab {
+  background: transparent;
+  color: white;
+  border: 1px solid #666;
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.tab.active {
+  background: #4caf50;
+  border-color: #4caf50;
+}
+
+.color-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.color-circle.active {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.3);
+}
+
+.instructions-panel,
+.scoreboard-panel {
+  color: #e5e7eb;
+}
+
+.instructions-panel ul {
+  list-style: inside disc;
+  line-height: 1.7;
+  margin: 14px 0;
+}
+
+.instruction-box {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.scoreboard-panel table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.scoreboard-panel th,
+.scoreboard-panel td {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 8px;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.scoreboard-panel th {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.best-score-summary {
+  margin-top: 12px;
+  color: #cbd5e1;
+}
+
+.overlay-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.overlay-actions button {
+  min-width: 120px;
+}
+
 .game-over{
   text-align: center;
   position: absolute;
   top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: var(--game-over-bg-color);
   padding: 20px;
   border-radius: 10px;
+}
+
+.start-screen,
+.overlay-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 10;
+}
+
+.start-card,
+.overlay-card {
+  background: #121827;
+  border: 2px solid #444;
+  padding: 24px;
+  border-radius: 16px;
+  width: min(420px, calc(100% - 32px));
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  color: white;
+}
+
+.start-card h2,
+.overlay-card h2 {
+  margin-top: 0;
+}
+
+.start-card label,
+.setting-group {
+  display: block;
+  margin-top: 16px;
+}
+
+.start-card input {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background: #161b2c;
+  color: white;
+}
+
+.radio-options,
+.color-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.color-options button,
+.radio-options label {
+  cursor: pointer;
+}
+
+.primary-button,
+.overlay-card button {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  margin-top: 18px;
+  cursor: pointer;
+}
+
+.primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hint {
+  color: #b0b0b0;
+  font-size: 0.95rem;
+  margin-top: 16px;
 }
